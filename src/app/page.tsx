@@ -1,8 +1,8 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import LogoRocket from "@/assets/logo.svg";
 import { axeAcessibilityReporter } from "@/utils/axeAcessibilityReporter";
-import type { Metadata } from "next";
-import { useEffect, useRef, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog"
 
 export const metadata: Metadata = {
   title: "Desenvolvendo uma web acessível",
@@ -12,17 +12,7 @@ export const metadata: Metadata = {
 axeAcessibilityReporter();
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null)
-  async function handleModalOpen() {
-    setIsModalOpen(true);
-  }
 
-  useEffect(() => {
-    if (isModalOpen) {
-      modalRef?.current?.focus()
-    }
-  }, [isModalOpen])
 
   return (
     <>
@@ -80,23 +70,31 @@ export default function Home() {
       <footer className="flex items-center justify-between max-w-5xl w-full mx-auto pt-6 ">
         <Image src={LogoRocket} width={286 / 2} alt="Blog da Rocketseat" />
         <nav aria-label="rodapé">
-          <button
+          <Dialog.Root>
+            <Dialog.Trigger asChild>
+            <button
             className="px-8 py-4 bg-[#202024] rounded-md text-[#9996DF]"
             type="button"
             aria-controls="modal1"
-            onClick={handleModalOpen}
           >
             Termos de uso
           </button>
+            </Dialog.Trigger>
+
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 bg-black/75" />
+              <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-100 p-10 rounded-md text-zinc-900">
+                <Dialog.Title>Termos de uso</Dialog.Title>
+                <Dialog.Description>Esses são os termos de uso.</Dialog.Description>
+                <Dialog.Close asChild>
+                  <button className="w-full py-3 px-2 mt-4 bg-[#8257e5] rounded-md text-slate-50 text-lg font-bold">Fechar</button>
+                </Dialog.Close>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </nav>
       </footer>
 
-      {isModalOpen && (
-        <div id="modal1" ref={modalRef} role="dialog" aria-label="Modal para Termos de uso" aria-labelledby="modal1Title" aria-describedby="modal1Description" className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-100 p-10 rounded-md text-zinc-900">
-          <h2 id="modal1Title">Termos de uso</h2>
-          <p id="modal1Description">Esses são os termos de uso.</p>
-        </div>
-      )}
     </>
   );
 }
